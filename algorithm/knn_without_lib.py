@@ -21,7 +21,7 @@ def euclidean_distance(x1, x2):
 
 # Class for implementing a k-NN classifier
 class KNNClassifier:
-    def __init__(self, k=3):
+    def __init__(self, k):
         self.k = k
 
     # Function to store training data
@@ -77,10 +77,29 @@ def confusion_matrix(y_true, y_pred):
     return matrix
 
 
+def display_classification_report(report):
+    print("Classification Report:\n")
+    print(f"{'Class':<10}{'Precision':<15}{'Recall':<15}{'F1-Score':<15}")
+    print("-" * 50)
+    for label, metrics in report.items():
+        precision = metrics["precision"]
+        recall = metrics["recall"]
+        f1_score = metrics["f1-score"]
+        print(f"{label:<10}{precision:<15.4f}{recall:<15.4f}{f1_score:<15.4f}")
+    print("-" * 50)
+
+    # Calcul du score moyen pour chaque métrique
+    avg_precision = np.mean([metrics["precision"] for metrics in report.values()])
+    avg_recall = np.mean([metrics["recall"] for metrics in report.values()])
+    avg_f1_score = np.mean([metrics["f1-score"] for metrics in report.values()])
+
+    print(f"{'Average':<10}{avg_precision:<15.4f}{avg_recall:<15.4f}{avg_f1_score:<15.4f}\n")
+
+
 def main():
     # Load the dataset
     data = pd.read_csv("undersampled_data.csv")
-    X = data[['Time', 'V1', 'V2', 'Amount']]
+    X = data[[f'V{i}' for i in range(1, 28)]]
     y = data['Class']
 
     # Split data into training and test sets
@@ -94,13 +113,9 @@ def main():
     # Make predictions
     y_pred = knn.predict(X_test)
 
-    # Display actual and predicted results
-    print("Actual vs Predicted Results:")
-    for pred, actual in zip(y_pred, y_test):
-        print(f"Predicted: {pred}, Actual: {actual}")
     # Evaluate the model
     print("Accuracy:", accuracy_score(y_test.to_numpy(), y_pred))
-    print("Classification Report:\n", classification_report(y_test.to_numpy(), y_pred))
+    display_classification_report(classification_report(y_test.to_numpy(), y_pred))
     print("Confusion Matrix:\n", confusion_matrix(y_test.to_numpy(), y_pred))
 
 

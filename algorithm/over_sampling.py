@@ -1,6 +1,5 @@
 ﻿import pandas as pd  # For data manipulation
 from imblearn.over_sampling import SMOTE  # For oversampling
-from imblearn.under_sampling import RandomUnderSampler  # For undersampling
 from sklearn.model_selection import train_test_split  # For splitting data into training and testing sets
 
 
@@ -23,17 +22,11 @@ def main():
     xResample, yResample = smote.fit_resample(x_train, y_train)
     print(f"After oversample with SMOTE:\n{yResample.value_counts()}")
 
-    # Apply Random UnderSampling to balance by undersampling the majority class
-    undersample = RandomUnderSampler(sampling_strategy="majority", random_state=69)
-
-    x_resample, y_resample = undersample.fit_resample(x_train, y_train)
-    print(f"After undersample with RandomUnderSampler:\n{y_resample.value_counts()}")
-
     # Save undersampled data to CSV
-    undersampled_data = pd.DataFrame(x_resample, columns=x.columns)
-    undersampled_data['Class'] = y_resample  # Adding the target column
-    undersampled_data.to_csv("undersampled_data.csv", index=False)
-    print("Undersampled data has been saved to 'undersampled_data.csv'")
+    oversampled_data = pd.DataFrame(xResample, columns=x.columns)
+    oversampled_data['Class'] = yResample  # Adding the target column
+    oversampled_data.to_csv("oversampled_data.csv", index=False)
+    print("oversampled data has been saved to 'oversampled_data.csv'")
 
 
 if __name__ == "__main__":
